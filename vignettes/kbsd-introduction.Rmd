@@ -1,0 +1,166 @@
+---
+title: "Kernel-Based Sparsity Diagnostic (KBSD)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Kernel-Based Sparsity Diagnostic}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The KBSD package provides tools to diagnose sparsity and support issues using a kernel-based notion of effective data points (EDP).
+Instead of relying purely on treatment density, this approach evaluates how much information is available about the outcome at a given point under different intervention schemes.
+
+## Simulated Example
+
+We begin with a simple simulated dataset.
+
+```{r}
+library(KBSD)
+library(simcausal)
+
+n <- 100
+
+D.base <- DAG.empty() + 
+  node("L", distr = "rbern", prob = 0.3) +
+  node("A", distr = "rnorm", mean = 0.21 * L + 0.45, sd = 0.14)
+
+Dset <- set.DAG(D.base)
+
+Odat <- sim(DAG = Dset, n = n, rndseed = 1, verbose = FALSE)
+Odat$ID <- NULL
+```
+
+### Intervention Scenarios
+
+We define three intervention strategies:
+
+```{r}
+# Static intervention
+Odat_int1 <- Odat
+Odat_int1$A <- 1
+
+# Small shift
+Odat_int2 <- Odat
+Odat_int2$A <- Odat_int2$A + 0.1
+
+# Larger shift
+Odat_int3 <- Odat
+Odat_int3$A <- Odat_int3$A + 0.5
+```
+
+### Apply Diagnostic
+
+```{r}
+data_result <- kbsd(
+  data = Odat,
+  int_data_list = list(Odat_int1, Odat_int2, Odat_int3),
+  disthalf_vec = c(L = 0.5, A = 0.1)
+)
+
+kbsd_plot(data_result)
+```
+
+## EFV Data: Single Time Point
+
+We now apply the diagnostic to real data.
+
+```{r}
+library(CICI)
+
+data(EFV)
+
+efv_subset <- EFV[, c("log_age", "efv.0", "adherence.1")]
+```
+
+### Intervention Scenarios
+
+```{r}
+# Static intervention
+efv_sub1 <- transform(efv_subset, efv.0 = 0)
+
+# Modified treatment policy
+efv_sub2 <- transform(efv_subset, efv.0 = efv.0 + 1)
+```
+
+### Apply Diagnostic
+
+```{r}
+data_result1 <- kbsd(
+  data = efv_subset,
+  int_data_list = list(efv_sub1, efv_sub2),
+  disthalf_vec = c(log_age = 1, efv.0 = 0.5, adherence.1 = 0)
+)
+
+kbsd_plot(data_result1)
+```
+
+## EFV Data: Multiple Time Points
+
+We now consider a longitudinal setting.
+
+### Intervention Strategies
+
+```{r}
+# Strategy 1: static intervention
+EFV_strat1 <- EFV
+EFV_strat1[paste0("efv.", 0:4)] <- 3
+
+# Strategy 2: modified treatment policy
+EFV_strat2 <- EFV
+EFV_strat2[paste0("efv.", 0:4)] <- 
+  EFV_strat2[paste0("efv.", 0:4)] + 0.1
+```
+
+### Apply Diagnostic
+
+```{r}
+data_result2 <- kbsd(
+  data = EFV,
+  int_data_list = list(EFV_strat1, EFV_strat2),
+  disthalf_vec = get_disthalf_vec(
+    EFV,
+    interventions = paste0("efv.", 0:4),
+    remove = c("VL.4", "metabolic", "NRTI"),
+    no_extrapolation = "sex"
+  )
+)
+
+kbsd_plot(data_result2)
+```
+
+## Interpretation
+
+The kernel-based sparsity diagnostic quantifies how much information is available for estimating counterfactual outcomes.
+
+- High EDP values indicate strong local support in the data
+- Low EDP values suggest extrapolation is needed at an unreasonable level and potential estimation instability
+- Increasing the half-distance parameters increases EDP values by relaxing similarity requirements
+
+## Summary
+
+This vignette illustrated:
+
+- How to apply the kernel-based sparsity diagnostic
+- How to define intervention scenarios
+- How to interpret effective data points
+
+For further details, consult the function documentation:
+
+
+?kbsd
+
+?kbsd_plot
+
+?get_disthalf_vec
+
+
+

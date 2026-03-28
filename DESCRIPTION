@@ -1,0 +1,19 @@
+Package: KBSD
+Title: Kernel-Based Sparsity Diagnostic
+Version: 0.0.1
+Authors@R: 
+    person("Katharina", "Ring", , "katharina.ring@stat.uni-muenchen.de", role = c("aut", "cre"))
+Description: Tools for diagnosing sparsity using a kernel-based effective data point measure.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: Rfast
+Suggests: 
+    simcausal,
+    CICI,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
+Config/testthat/edition: 3
