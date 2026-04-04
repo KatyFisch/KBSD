@@ -7,7 +7,7 @@ Description: Tools for diagnosing sparsity using a kernel-based effective data p
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: Rfast (== 2.0.1)
+Imports: Rfast
 Suggests: 
     simcausal,
     CICI,

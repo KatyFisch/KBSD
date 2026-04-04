@@ -73,6 +73,18 @@ kbsd <- function(data, int_data_list, disthalf_vec, type="Rfast", kernel="gaussi
 
     # calculation of the diagnostic
     if (type=="Rfast") {
+      # make sure correct Rfast version is used
+      if (utils::packageVersion("Rfast") > "2.1.5.1") {
+        warning(
+          'Rfast > 2.1.5.1 is known to be buggy and leads to incorrect results for this function.
+To install another version, for example 2.1.5.1, restart R (and RStudio if applicable) and run:
+remotes::install_version("Rfast", version = "2.1.5.1")
+Check which version is in use with:
+utils::packageVersion("Rfast")',
+          call. = FALSE
+        )
+      }
+      # use Rfast to calculate the diagnostic
       dat_int_scaled <- sweep(data_intervened, 2, 1/disthalf_vec, FUN='*')
       dat_scaled <- sweep(data, 2, 1/disthalf_vec, FUN='*')
       dia <- Rfast::rowsums(exp(log(0.5)*Rfast::dista(dat_int_scaled, dat_scaled, square = TRUE)), parallel = parallel)
