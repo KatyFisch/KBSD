@@ -4,10 +4,19 @@
 \alias{kbsd_plot}
 \title{Plotting the KBSD}
 \usage{
-kbsd_plot(result_df)
+kbsd_plot(
+  result_df,
+  xlab = "intervention",
+  ylab = "EDP",
+  main = "KBSD: Adjusted Boxplots",
+  ylim = c(0, max(result_df$diagnostic, na.rm = TRUE)),
+  ...
+)
 }
 \arguments{
 \item{result_df}{resulting data.frame of kbsd()}
+
+\item{...}{additional arguments passed to plotting functions}
 }
 \value{
 plot

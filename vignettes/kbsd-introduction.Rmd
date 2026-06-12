@@ -59,7 +59,7 @@ Odat_int3$A <- Odat_int3$A + 0.5
 
 ### Apply Diagnostic
 
-```{r}
+```{r, fig.width=6, fig.height=4}
 data_result <- kbsd(
   data = Odat,
   int_data_list = list(Odat_int1, Odat_int2, Odat_int3),
@@ -93,7 +93,7 @@ efv_sub2 <- transform(efv_subset, efv.0 = efv.0 + 1)
 
 ### Apply Diagnostic
 
-```{r}
+```{r, fig.width=6, fig.height=4}
 data_result1 <- kbsd(
   data = efv_subset,
   int_data_list = list(efv_sub1, efv_sub2),
@@ -122,7 +122,7 @@ EFV_strat2[paste0("efv.", 0:4)] <-
 
 ### Apply Diagnostic
 
-```{r}
+```{r, fig.width=6, fig.height=4}
 data_result2 <- kbsd(
   data = EFV,
   int_data_list = list(EFV_strat1, EFV_strat2),
@@ -136,6 +136,15 @@ data_result2 <- kbsd(
 
 kbsd_plot(data_result2)
 ```
+
+## Customize Graphics
+
+Additional plotting arguments can be passed
+
+```{r, fig.width=6, fig.height=4}
+kbsd_plot(data_result2, xlab="Efavirenz", boxwex = 0.3, border="red")
+```
+
 
 ## Interpretation
 

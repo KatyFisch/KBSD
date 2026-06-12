@@ -1,12 +1,14 @@
 #' Plotting the KBSD
 #'
 #' @param result_df resulting data.frame of kbsd()
+#' @param ... additional arguments passed to plotting functions
 #'
 #' @return plot
 #' @importFrom stats sd quantile
 #' @importFrom graphics abline bxp points
 #' @export
-kbsd_plot <- function(result_df){
+kbsd_plot <- function(result_df, xlab = "intervention", ylab = "EDP", main = "KBSD: Adjusted Boxplots",
+                      ylim = c(0, max(result_df$diagnostic, na.rm = TRUE)), ...){
   groups <- split(result_df$diagnostic, result_df$intervention)
 
   # Quantile berechnen
@@ -16,15 +18,15 @@ kbsd_plot <- function(result_df){
   stats <- sapply(q, identity)
 
   # Boxplot zeichnen
-  bx <- bxp(list(
+  bxp(list(
     stats = stats,
     n = sapply(groups, length),
     names = names(groups)
   ),
-  ylim = c(0, max(result_df$diagnostic, na.rm = TRUE)),
-  xlab = "intervention",
-  ylab = "EDP",
-  main = "KBSD: Adjusted Boxplots"
+  ylim = ylim,
+  xlab = xlab,
+  ylab = ylab,
+  main = main, ...
   )
   abline(h = 0, col = "lightgray", lwd = 1, lty = 2)
 
